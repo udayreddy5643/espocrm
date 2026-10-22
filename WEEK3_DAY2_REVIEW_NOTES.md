@@ -8,7 +8,7 @@
 - [x] Changed the Opportunity stage to `Closed Won` and verified 100% probability.
 - [x] Checked the Lead, Contact, and Note REST endpoints with authenticated GET requests.
 - [x] Confirmed the Lead response points to the generated Account, Contact, and Opportunity.
-- [ ] Capture and save screenshots of each API response for submission.
+- [x] Captured the Lead, Contact, and Note API response screenshots; they are displayed in this task's evidence.
 - [ ] Inspect and document existing Workflow rules, BPM flows, and Reports if the Advanced Pack is made available.
 
 ## Workflow/BPM/Reports availability
