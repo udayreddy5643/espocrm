@@ -6,9 +6,9 @@
 - [x] Converted it to an Account, Contact, and Opportunity.
 - [x] Added a follow-up note to the Opportunity Stream.
 - [x] Changed the Opportunity stage to `Closed Won` and verified 100% probability.
-- [x] Checked the Lead, Contact, and Note REST endpoints with authenticated GET requests.
+- [x] Checked the Lead, Contact, Note, and Task REST endpoints with GET requests.
 - [x] Confirmed the Lead response points to the generated Account, Contact, and Opportunity.
-- [x] Captured the Lead, Contact, and Note API response screenshots; they are displayed in this task's evidence.
+- [x] Captured the Lead, Contact, Note, and Task API response screenshots; they are displayed in this task's evidence.
 - [ ] Inspect and document existing Workflow rules, BPM flows, and Reports if the Advanced Pack is made available.
 
 ## Workflow/BPM/Reports availability
