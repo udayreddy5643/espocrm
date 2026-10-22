@@ -12,8 +12,9 @@ This is a local EspoCRM 10.0.10 walkthrough using a clearly labeled training rec
 | Add customer contact | Contact | Contact `Training Lead`, linked to `W3D2 Training Account` | `GET /api/v1/Contact` |
 | Track deal | Opportunity | Name `W3D2 Training Opportunity`; Amount USD 1,111.00; Stage changed from `Prospecting` to `Closed Won`; Probability set to 100%; Close Date today | Opportunity was visible in the Lead conversion result |
 | Record follow-up | Note (Stream post) | Posted a follow-up note on the Opportunity documenting review and closure | `GET /api/v1/Note` |
+| Inspect scheduled activity API | Task | Checked the scheduled Task collection; no tasks existed in the instance (`total: 0`) | `GET /api/v1/Task` |
 
-The three API calls were read-only GET requests made in the authenticated local browser. The returned records confirmed the Lead, Contact, and Note/Stream data. The Notes endpoint is used for the activity feed; EspoCRM's scheduled Activities entities are Meetings, Calls, and Tasks.
+The API calls were read-only GET requests made in the local browser. The Lead, Contact, and Note responses confirmed the converted records and follow-up Stream post. `GET /api/v1/Task` returned an empty collection, confirming the scheduled Task endpoint is available; the follow-up itself is a Note, not a scheduled Meeting, Call, or Task.
 
 ## Flowchart
 
@@ -36,13 +37,15 @@ flowchart LR
 - `GET /api/v1/Lead` — returns a paginated `list` and `total`; the converted Lead includes its created Account, Contact, and Opportunity IDs/names.
 - `GET /api/v1/Contact` — returns Contact records with account relationship fields such as `accountId` and `accountName`.
 - `GET /api/v1/Note` — returns Stream note records. The follow-up post is a `Post` whose `parentType` is `Opportunity` and whose `parentId` identifies the deal.
+- `GET /api/v1/Task` — returns scheduled Task activities; this instance returned `{"total":0,"list":[]}`.
 
-Example calls from the authenticated local browser:
+Example calls from the local browser:
 
 ```text
 http://localhost:8080/api/v1/Lead
 http://localhost:8080/api/v1/Contact
 http://localhost:8080/api/v1/Note
+http://localhost:8080/api/v1/Task
 ```
 
 ## Workflow, BPM, and report availability
@@ -54,4 +57,4 @@ The local instance's Administration page links to the Official Extensions catalo
 - EspoCRM dashboard loaded at `http://localhost:8080/`.
 - Lead detail showed Status `Converted` and links to the created Account, Contact, and Opportunity.
 - Opportunity detail showed Stage `Closed Won`, Amount `$1,111.00`, Probability `100`, and the follow-up Stream note.
-- The three GET endpoints above returned JSON records successfully.
+- Lead, Contact, Note, and Task API endpoints returned JSON successfully; the Task collection was empty.
