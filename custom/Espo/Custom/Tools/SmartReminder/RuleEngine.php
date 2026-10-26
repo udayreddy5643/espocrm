@@ -47,6 +47,7 @@ class RuleEngine
         ?string $description = null,
         ?string $priority = null,
         ?DateTimeImmutable $referenceTime = null,
+        bool $enablePrepBuffer = true,
     ): array {
         $reference = $referenceTime ?? new DateTimeImmutable('now', new DateTimeZone('UTC'));
 
@@ -121,7 +122,7 @@ class RuleEngine
         }
 
         // Rule 2: Preparation cue rule
-        if ($hasPrepKeywords && $leadTimeSeconds >= 14400) {
+        if ($enablePrepBuffer && $hasPrepKeywords && $leadTimeSeconds >= 14400) {
             $reminders[] = ['type' => self::TYPE_POPUP, 'seconds' => 7200];
             $reasons[] = 'Preparation/agenda buffer detected (2h prep popup)';
         }

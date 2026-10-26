@@ -1,0 +1,21 @@
+{
+    "fields": {
+        "smartReminderEnabled": {
+            "type": "bool",
+            "default": true
+        },
+        "smartReminderMode": {
+            "type": "enum",
+            "options": [
+                "ai",
+                "rules",
+                "disabled"
+            ],
+            "default": "ai"
+        },
+        "smartReminderPreparationBuffer": {
+            "type": "bool",
+            "default": true
+        }
+    }
+}

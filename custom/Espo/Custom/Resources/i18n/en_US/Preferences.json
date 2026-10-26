@@ -1,0 +1,19 @@
+{
+    "fields": {
+        "smartReminderEnabled": "Smart Reminders Enabled",
+        "smartReminderMode": "Smart Reminder Mode",
+        "smartReminderPreparationBuffer": "Smart Preparation Buffer"
+    },
+    "options": {
+        "smartReminderMode": {
+            "ai": "AI-Suggested (with Rule Fallback)",
+            "rules": "Deterministic Rules Only",
+            "disabled": "Disabled"
+        }
+    },
+    "tooltips": {
+        "smartReminderEnabled": "Automatically compute context-aware reminders for scheduled meetings, calls, and tasks.",
+        "smartReminderMode": "Select AI-suggested timing or local rule heuristics.",
+        "smartReminderPreparationBuffer": "Add advance preparation alerts when agenda contains keywords like demo, presentation, or review."
+    }
+}
