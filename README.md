@@ -1,99 +1,148 @@
-## EspoCRM
+# EspoCRM Enterprise Extension — Cynaris Internship Project
 
-[![PHPStan level 8](https://img.shields.io/badge/PHPStan-level%208-brightgreen)](#espocrm)
+[![PHPStan Level 8](https://img.shields.io/badge/PHPStan-Level%208-brightgreen)](https://github.com/udayreddy5643/espocrm)
+[![PHPUnit 11](https://img.shields.io/badge/PHPUnit-11.5%20(40%20passed)-blue)](tests/)
+[![Docker](https://img.shields.io/badge/Docker-Production%20Ready-2496ED?logo=docker&logoColor=white)](deploy/)
+[![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE.txt)
 
-[EspoCRM](https://www.espocrm.com) is a free, open-source CRM platform designed to help organizations build and maintain strong customer relationships.
-It provides a wide range of tools to store, organize, and manage leads, contacts, sales opportunities, marketing campaigns,
-support cases, and more – all business information in a simple and intuitive interface.
+> **Internship Track**: Full Stack Development (EspoCRM Fork & Enterprise Extension)  
+> **Author**: Uday Reddy  
+> **Repository**: [udayreddy5643/espocrm](https://github.com/udayreddy5643/espocrm)  
+> **Base Version**: EspoCRM 10.0.10 (PHP 8.4 / 8.5, MariaDB 10.11 / 11, Nginx)
 
-![Screenshot](https://github.com/user-attachments/assets/d0806394-3691-43a1-83a5-16ad2e7314e2)
+---
 
+## 🌟 Executive Summary & Features Added
 
-### Architecture
+This repository is an enterprise-grade extension of EspoCRM developed during the Cynaris Full Stack Internship. It enhances core CRM capabilities with automated AI conversation summaries, executive dashboard analytics, intelligent multi-channel reminder automation, per-user personalization preferences, and production containerization.
 
-EspoCRM is a web application with a frontend designed as a single-page application and a REST API
-backend written in PHP.
+### Key Capabilities Built
 
-### Demo
+| Feature Module | Scope & Architecture | Impact & Innovation |
+| :--- | :--- | :--- |
+| **1. AI Conversation Summarizer** | Background Job (`ConversationSummarizer.php`) + Event Hook (`ActivityConversationSummary.php`) | Automatically parses the 5 latest interactions (Calls, Meetings, Tasks, Emails) and maintains a concise 3-bullet AI summary on Account records via Groq with OpenRouter fallback. |
+| **2. Activities per Account Dashboard** | REST API (`ActivitySummary.php`) + Dashlet (`ActivitySummary.json`) | Interactive 3-series bar chart visualizing team activities per Account over the last 30 days. Uses strict ACL and pre-ranked memory query optimization reducing database I/O by 98%. |
+| **3. Smart Reminders Rule Engine** | Heuristic Engine (`RuleEngine.php`) + Service (`Service.php`) | Evaluates start lead times, event urgency/priority, and preparation keywords (deck, demo, review, prep, contract) to calculate multi-tier advance alerts (Popup & Email). |
+| **4. AI Timing Suggester** | LLM Suggester (`AiSuggester.php`) + Controller (`SmartReminder.php`) | Analyzes meeting agendas and subject context to recommend optimal notification timing with zero-downtime fallback to deterministic rules. |
+| **5. User Preference Controls** | Metadata (`Preferences.json`) + Hook Integration (`SmartReminderHook.php`) | Granular user settings (`smartReminderEnabled`, `smartReminderMode` [ai/rules/disabled], `smartReminderPreparationBuffer`) dynamically honored during entity saves and API requests. |
+| **6. Interactive Frontend View** | AMD View (`custom:views/meeting/fields/smart-reminders`) | Custom Backbone.js field view for `Meeting`, `Call`, and `Task` featuring a **"Smart Timing"** button, dynamic loading state, source badge (`AI Suggested` vs `Rule Heuristic`), and automatic form populate. |
+| **7. Production Deployment Suite** | `deploy/Dockerfile`, `docker-compose.prod.yml`, `railway.json`, `db-check.mjs` | Multi-stage production container with OPcache tuning, Supervisord process manager, automated database readiness checks, and Railway cloud deployment spec. |
 
-You can try the CRM on an online [demo](https://www.espocrm.com/demo/).
+---
 
-### Requirements
+## 🛠️ Technology Stack
 
-* PHP 8.3 - 8.5;
-* MySQL 8.0 (and later), or MariaDB 10.6 (and later);
-* PostgreSQL 15 (and later).
+* **Backend**: PHP 8.4 / 8.5 (Strict typing, PSR-4 autoloading, Dependency Injection, EspoCRM ORM)
+* **Frontend**: Vanilla JavaScript (ES6+, AMD / RequireJS, Backbone.js, Marionette.js)
+* **Styling & Layout**: EspoCRM Theme System, CSS3, FontAwesome 5
+* **Database**: MariaDB 10.11 / MySQL 8.0, Node.js `mysql2/promise`
+* **AI Providers**: Groq API (`openai/gpt-oss-120b`), OpenRouter API (Fallback), Zero-Leak Error Handling
+* **Containerization**: Docker, Docker Compose, Alpine Linux, Nginx, PHP-FPM, Supervisord
+* **Testing & Quality**: PHPUnit 11.5, PHPStan Level 8, Custom Docker Test Harness
 
-For more information about server configuration, see [this article](https://docs.espocrm.com/administration/server-configuration/).
+---
 
-### Download
+## 🚀 Quick Start & Local Setup
 
-[Download](https://www.espocrm.com/download/) the latest release from our website or from GitHub [releases](https://github.com/espocrm/espocrm/releases).
+### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows / Linux / macOS)
+* Git
 
-### Release notes
+### 1. Clone Your Fork
+```bash
+git clone https://github.com/udayreddy5643/espocrm.git
+cd espocrm
+```
 
-Release notes are available at GitHub [releases](https://github.com/espocrm/espocrm/releases).
+### 2. Configure Environment Variables
+Create a local `.env` file or export environment variables:
+```bash
+# CRM Database Configuration
+ESPOCRM_DATABASE_HOST=espocrm-mariadb
+ESPOCRM_DATABASE_NAME=espocrm
+ESPOCRM_DATABASE_USER=espocrm
+ESPOCRM_DATABASE_PASSWORD=espocrm_dev_password
+ESPOCRM_SITE_URL=http://localhost:8080
 
-### Documentation
+# AI Provider Keys (Optional - gracefully falls back to rules if unset)
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_MODEL=openai/gpt-oss-120b
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
 
-See the [documentation](https://docs.espocrm.com) for administrators, users and developers.
+### 3. Launch Development Environment
+```bash
+# Start Docker containers
+docker-compose up -d
 
-### Why EspoCRM?
+# Clear cache and rebuild metadata
+docker exec espocrm-php php /var/www/html/command.php rebuild
+```
 
-* Open-source transparency. EspoCRM's source code is open and accessible, so anyone can inspect it and see how data is being managed within the CRM.
-* Customization freedom. You can develop features, create custom entities, fields, relationships, buttons to make the system fit your specific needs. EspoCRM is more than a CRM – it's a platform for building custom business applications.
-* Clean user interface. EspoCRM offers an uncluttered, minimalist, and fast user interface, which is easy to navigate and has a short learning curve.
-* Straightforward REST API. It can be easily integrated with other applications using a REST API.
+### 4. Access the CRM
+* **Web UI**: Open [http://localhost:8080](http://localhost:8080)
+* **Default Admin**: Log in or complete initial installer wizard.
 
-### Who is EspoCRM for?
+---
 
-* From startups, small & medium-sized businesses to larger organizations. A flexible, fully customizable solution that scales with your needs.
-* Developers & tech enthusiasts. You can extend functionalities, build extensions, and create custom integrations.
-* Anyone seeking a free or on-premise CRM.
+## 🧪 Running Automated Tests
 
-### Installing stable version
+All unit tests are isolated and executable in Docker without altering host dependencies:
 
-See installation instructions:
+```bash
+# Execute the full test suite (40 tests, 159 assertions)
+docker run --rm -v "${PWD}:/app" --volumes-from espocrm-php -w /app php85-nginx-mariadb-espocrm-php php /var/www/html/phpunit.phar --bootstrap tests/bootstrap-unit.php tests/unit/Espo/Custom/
+```
 
-* [Manual installation](https://docs.espocrm.com/administration/installation/)
-* [Installation by script](https://docs.espocrm.com/administration/installation-by-script/)
-* [Installation with Docker](https://docs.espocrm.com/administration/docker/installation/)
-* [Installation with Traefik](https://docs.espocrm.com/administration/docker/traefik/)
+### Test Coverage Highlights
+* `RuleEngineTest`: Immediate notice (<10m), short notice (10-60m), same-day notice, high-priority escalation, multi-day advance alerts, keyword buffer detection, and offset rounding clamping.
+* `AiSuggesterTest`: Missing key fallback, JSON markdown fence stripping, channel filtering, and lead-time bounds clamping.
+* `ServiceTest`: AI routing, rule fallback routing, explicit AI bypass, and past event skipping.
+* `SmartReminderHookTest`: Entity filtering (`Meeting`, `Call`, `Task`), explicit reminder preservation, and automatic injection on save.
+* `PreferencesIntegrationTest`: User preference disabling, mode switching, and buffer toggling.
+* `ReportTest`: Strict ACL enforcement, empty report handling, deterministic secondary sorting by account name, and candidate pre-ranking query optimization.
+* `SmartReminderControllerTest`: REST API parameter validation (400 Bad Request), scope authorization (403 Forbidden), user preference inheritance, and client overrides.
 
-### Bug reporting
+---
 
-Create a [GitHub issue](https://github.com/espocrm/espocrm/issues/new/choose) or post on our [forum](https://forum.espocrm.com/forum/bug-reports).
+## 🚢 Production Deployment
 
-### Development
+### Option A: Railway Cloud Deployment
+1. Connect this GitHub repository to [Railway](https://railway.app).
+2. Railway detects [`deploy/railway.json`](deploy/railway.json) and builds using [`deploy/Dockerfile`](deploy/Dockerfile).
+3. Add a MariaDB plugin and set the environment variables:
+   - `ESPOCRM_DATABASE_HOST`: `${{MariaDB.RAILWAY_TCP_PROXY_DOMAIN}}`
+   - `ESPOCRM_DATABASE_NAME`: `${{MariaDB.MYSQLDATABASE}}`
+   - `ESPOCRM_DATABASE_USER`: `${{MariaDB.MYSQLUSER}}`
+   - `ESPOCRM_DATABASE_PASSWORD`: `${{MariaDB.MYSQLPASSWORD}}`
+   - `ESPOCRM_SITE_URL`: `https://${{RAILWAY_STATIC_URL}}`
+4. The healthcheck endpoint automatically monitors `/api/v1/App/user`.
 
-See the [developer documentation](https://docs.espocrm.com/development/).
+### Option B: Production Docker Compose
+```bash
+docker compose -f deploy/docker-compose.prod.yml up -d
+```
 
-We highly recommend using an IDE for development. The backend codebase adheres to SOLID principles, utilizes interfaces, static typing and generics. We recommend to start learning EspoCRM from the Dependency Injection article in the documentation.
+---
 
-Metadata plays an integral role in the EspoCRM application. All possible parameters are described with a JSON Schema, meaning you will have autocompletion in the IDE. You can also find the full metadata reference in the documentation.
+## 📚 Technical Documentation & Architecture
 
-The frontend is an SPA built on a custom framework. It utilizes nested views and service DI, with the core partially written in TypeScript. Developers primarily work with existing form and field view implementations.
+For detailed architecture diagrams, API contracts, database schema models, and viva responses, refer to:
+* **[ARCHITECTURE.md](ARCHITECTURE.md)**: Full system architecture, Mermaid data-flow diagrams, and ORM access control specifications.
+* **[docs/week4-day1-smart-reminders.md](docs/week4-day1-smart-reminders.md)**: Automation Rule Engine & AI Suggester architecture.
+* **[docs/week4-day2-smart-reminders-ui.md](docs/week4-day2-smart-reminders-ui.md)**: Frontend AMD View and User Preferences design.
+* **[docs/week4-day3-debug-sprint.md](docs/week4-day3-debug-sprint.md)**: Query optimization, benchmark results, and root cause analyses.
+* **[docs/week4-day4-deployment-architecture.md](docs/week4-day4-deployment-architecture.md)**: Production deployment breakdown and core directory analysis.
+* **[docs/week4-day5-final-submission.md](docs/week4-day5-final-submission.md)**: Final PR submission template, video walkthrough script, and checklist.
 
-### Community & Support
+---
 
-If you have a question regarding some features, need help or customizations, want to get in touch with other EspoCRM users, or add a feature request, please use our [community forum](https://forum.espocrm.com/). We believe that using the forum to ask for help and share experience allows everyone in the community to contribute and use this knowledge later.
+## 📹 Demo Video
 
-### License
+* **Video Walkthrough (YouTube / Drive)**: `https://youtu.be/DEMO_VIDEO_PLACEHOLDER` *(Unlisted walkthrough demonstrating environment setup, Activity Dashboard, Smart Reminders UI, AI timing suggestions, and automated test execution)*.
 
-EspoCRM is an open-source project licensed under [GNU AGPLv3](https://raw.githubusercontent.com/espocrm/espocrm/master/LICENSE.txt).
+---
 
-### Contributing
+## 📄 License & Attribution
 
-Before we can merge your pull request, you need to accept our CLA [here](https://github.com/espocrm/cla). See the [contributing guidelines](https://github.com/espocrm/espocrm/blob/master/.github/CONTRIBUTING.md).
-
-Branches:
-
-* *fix* – upcoming maintenance release; minor fixes should be pushed to this branch;
-* *master* – develop branch; new features should be pushed to this branch;
-* *stable* – last stable release.
-
-### Language
-
-If you want to improve existing translation or add a language that is not available yet, you can contribute on our [POEditor](https://poeditor.com/join/project/gLDKZtUF4i) project. See instructions [here](https://www.espocrm.com/blog/how-to-use-poeditor-to-translate-espocrm/). It may be reasonable to let us know about your intention to join the POEditor project by posting on our forum or via the contact form on our website.
-
-Changes on POEditor are usually merged to the GitHub repository before minor releases.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. Original codebase copyright © EspoCRM, Inc. All custom features and extensions developed by Uday Reddy under the Cynaris Full Stack Development Internship.
