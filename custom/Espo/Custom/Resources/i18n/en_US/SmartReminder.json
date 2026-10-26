@@ -1,0 +1,13 @@
+{
+  "labels": {
+    "SmartReminder": "Smart Reminder",
+    "suggestTiming": "Suggest Timing",
+    "ruleEngine": "Smart Reminder Rule Engine",
+    "aiSuggester": "AI Reminder Timing Suggester"
+  },
+  "messages": {
+    "timingSuggested": "Optimal reminders calculated based on lead time and activity context.",
+    "invalidDate": "Start date is invalid or in the past.",
+    "unsupportedEntity": "Entity type does not support smart reminders."
+  }
+}

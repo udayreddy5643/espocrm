@@ -27,6 +27,11 @@
 !/custom/Espo/Custom/Hooks/
 !/custom/Espo/Custom/Hooks/Common/
 !/custom/Espo/Custom/Hooks/Common/ActivityConversationSummary.php
+!/custom/Espo/Custom/Hooks/Common/SmartReminderHook.php
+!/custom/Espo/Custom/Controllers/
+!/custom/Espo/Custom/Controllers/SmartReminder.php
+!/custom/Espo/Custom/Tools/
+!/custom/Espo/Custom/Tools/SmartReminder/
 !/custom/Espo/Custom/Jobs/
 !/custom/Espo/Custom/Jobs/ConversationSummarizer.php
 !/custom/Espo/Custom/Resources/
@@ -38,6 +43,7 @@
 !/custom/Espo/Custom/Resources/i18n/
 !/custom/Espo/Custom/Resources/i18n/en_US/
 !/custom/Espo/Custom/Resources/i18n/en_US/Account.json
+!/custom/Espo/Custom/Resources/i18n/en_US/SmartReminder.json
 !/custom/Espo/Modules/.htaccess
 /install/config.php
 
