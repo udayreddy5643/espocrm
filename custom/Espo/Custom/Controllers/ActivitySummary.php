@@ -11,8 +11,11 @@ class ActivitySummary extends Record
 {
     public function getActionReport(Request $request): stdClass
     {
+        $limitParam = $request->getQueryParam('limit');
+        $limit = $limitParam !== null ? (int) $limitParam : 10;
+
         return $this->injectableFactory
             ->create(Report::class)
-            ->run();
+            ->run($limit);
     }
 }

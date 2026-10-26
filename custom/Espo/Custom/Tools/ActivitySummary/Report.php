@@ -23,7 +23,7 @@ class Report
      *
      * @throws Forbidden
      */
-    public function run(): stdClass
+    public function run(int $limit = 10, ?\DateTimeImmutable $now = null): stdClass
     {
         foreach (['Account', 'Call', 'Meeting', 'Email'] as $scope) {
             if (!$this->acl->checkScope($scope, Table::ACTION_READ)) {
@@ -31,8 +31,10 @@ class Report
             }
         }
 
-        $from = (new \DateTimeImmutable('-30 days'))->format('Y-m-d H:i:s');
-        $to = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $limit = max(1, min($limit, 100));
+        $reference = $now ?? new \DateTimeImmutable();
+        $from = $reference->modify('-30 days')->format('Y-m-d H:i:s');
+        $to = $reference->format('Y-m-d H:i:s');
         $countMap = [];
 
         $this->collectCounts($countMap, 'Call', 'dateStart', $from, $to);
@@ -43,6 +45,20 @@ class Report
             return (object) ['from' => $from, 'dataList' => []];
         }
 
+        // Performance Optimization:
+        // Pre-aggregate total activity counts and sort candidate account IDs in memory.
+        // Instead of querying all accounts in $countMap (which could contain thousands of IDs),
+        // we extract only the top candidate IDs with a buffer (2x limit, min 20) to handle
+        // any deleted or inaccessible records without unbounded SQL WHERE IN lists.
+        $candidateScores = [];
+        foreach ($countMap as $accountId => $counts) {
+            $candidateScores[$accountId] = ($counts['Call'] ?? 0) + ($counts['Meeting'] ?? 0) + ($counts['Email'] ?? 0);
+        }
+
+        arsort($candidateScores);
+        $candidateLimit = max(20, $limit * 2);
+        $topCandidateIds = array_slice(array_keys($candidateScores), 0, $candidateLimit);
+
         $accountQuery = $this->selectBuilderFactory
             ->create()
             ->from('Account')
@@ -51,7 +67,7 @@ class Report
 
         $accountQuery
             ->select(['id', 'name'])
-            ->where(['id' => array_keys($countMap)]);
+            ->where(['id' => $topCandidateIds]);
 
         $accountRows = $this->entityManager
             ->getQueryExecutor()
@@ -62,18 +78,29 @@ class Report
 
         foreach ($accountRows as $account) {
             $id = $account['id'];
+            if (!isset($countMap[$id])) {
+                continue;
+            }
+
             $counts = $countMap[$id];
             $counts['accountId'] = $id;
-            $counts['accountName'] = $account['name'];
-            $counts['total'] = $counts['Call'] + $counts['Meeting'] + $counts['Email'];
+            $counts['accountName'] = (string) ($account['name'] ?? '');
+            $counts['total'] = ($counts['Call'] ?? 0) + ($counts['Meeting'] ?? 0) + ($counts['Email'] ?? 0);
             $dataList[] = $counts;
         }
 
-        usort($dataList, static fn (array $a, array $b): int => $b['total'] <=> $a['total']);
+        // Deterministic sort: Primary by total DESC, Secondary by accountName ASC
+        usort($dataList, static function (array $a, array $b): int {
+            if ($b['total'] !== $a['total']) {
+                return $b['total'] <=> $a['total'];
+            }
+
+            return strcmp((string) $a['accountName'], (string) $b['accountName']);
+        });
 
         return (object) [
             'from' => $from,
-            'dataList' => array_slice($dataList, 0, 10),
+            'dataList' => array_slice($dataList, 0, $limit),
         ];
     }
 
