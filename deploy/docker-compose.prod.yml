@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  espocrm:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: espocrm-app-prod
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:80"
+    environment:
+      - ESPOCRM_DATABASE_HOST=espocrm-db-prod
+      - ESPOCRM_DATABASE_PORT=3306
+      - ESPOCRM_DATABASE_NAME=${DB_NAME:-espocrm}
+      - ESPOCRM_DATABASE_USER=${DB_USER:-espocrm}
+      - ESPOCRM_DATABASE_PASSWORD=${DB_PASSWORD:-espocrm_prod_secret}
+      - ESPOCRM_SITE_URL=${SITE_URL:-http://localhost:8080}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    volumes:
+      - espo_data:/var/www/html/data
+      - espo_custom:/var/www/html/custom
+      - espo_client_custom:/var/www/html/client/custom
+    depends_on:
+      espocrm-db:
+        condition: service_healthy
+
+  espocrm-db:
+    image: mariadb:10.11
+    container_name: espocrm-db-prod
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-espocrm}
+      - MYSQL_USER=${DB_USER:-espocrm}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-espocrm_prod_secret}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root_prod_secret}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  espo_data:
+  espo_custom:
+  espo_client_custom:
+  db_data:
