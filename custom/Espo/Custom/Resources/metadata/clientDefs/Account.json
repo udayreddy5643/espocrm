@@ -1,0 +1,30 @@
+{
+    "sidePanels": {
+        "detail": [
+            {
+                "name": "aiConversationSummary",
+                "label": "aiConversationSummary",
+                "view": "views/record/panels/default-side",
+                "fieldList": [
+                    {
+                        "name": "aiSummary",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ],
+        "detailSmall": [
+            {
+                "name": "aiConversationSummary",
+                "label": "aiConversationSummary",
+                "view": "views/record/panels/default-side",
+                "fieldList": [
+                    {
+                        "name": "aiSummary",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ]
+    }
+}

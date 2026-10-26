@@ -1,0 +1,8 @@
+{
+    "labels": {
+        "aiConversationSummary": "AI Conversation Summary"
+    },
+    "fields": {
+        "aiSummary": "AI Conversation Summary"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "fields": {
+        "aiSummary": {
+            "type": "text",
+            "readOnly": true
+        }
+    }
+}
