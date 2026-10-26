@@ -23,6 +23,7 @@ class Service
         ?string $priority = null,
         bool $useAi = true,
         ?DateTimeImmutable $referenceTime = null,
+        bool $enablePrepBuffer = true,
     ): stdClass {
         $ruleResult = $this->ruleEngine->evaluate(
             entityType: $entityType,
@@ -31,6 +32,7 @@ class Service
             description: $description,
             priority: $priority,
             referenceTime: $referenceTime,
+            enablePrepBuffer: $enablePrepBuffer,
         );
 
         $leadTimeSeconds = $ruleResult['leadTimeSeconds'];

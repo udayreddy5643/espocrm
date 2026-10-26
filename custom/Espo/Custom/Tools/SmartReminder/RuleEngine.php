@@ -187,6 +187,12 @@ class RuleEngine
             $roundedSeconds = $this->findClosestAllowedOffset($seconds);
 
             if ($roundedSeconds > $leadTimeSeconds) {
+                // If rounding up exceeded leadTimeSeconds, clamp to the highest allowed offset <= leadTimeSeconds
+                // instead of dropping the reminder entirely.
+                $roundedSeconds = $this->findHighestAllowedOffsetBelowOrEqual($leadTimeSeconds);
+            }
+
+            if ($roundedSeconds < 0 || $roundedSeconds > $leadTimeSeconds) {
                 continue;
             }
 
@@ -229,6 +235,19 @@ class RuleEngine
             $diff = abs($offset - $seconds);
             if ($diff < $bestDiff) {
                 $bestDiff = $diff;
+                $best = $offset;
+            }
+        }
+
+        return $best;
+    }
+
+    private function findHighestAllowedOffsetBelowOrEqual(int $maxSeconds): int
+    {
+        $best = 0;
+
+        foreach (self::ALLOWED_OFFSETS as $offset) {
+            if ($offset <= $maxSeconds && $offset >= $best) {
                 $best = $offset;
             }
         }

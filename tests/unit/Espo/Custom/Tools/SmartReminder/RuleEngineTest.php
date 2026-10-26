@@ -158,4 +158,23 @@ class RuleEngineTest extends TestCase
         $this->assertContains(7200, $offsets); // 2 hours prep popup
         $this->assertStringContainsString('Preparation', $res['reason']);
     }
+
+    public function testRoundingClampsToHighestAllowedOffsetBelowLeadTime(): void
+    {
+        // Start date 550 seconds in future (between 300s [5m] and 600s [10m])
+        // Without clamping, an offset of 500s would round to 600s (> 550s lead time) and be dropped!
+        // With clamping, it must clamp down to 300s (allowed offset <= 550s).
+        $startDate = $this->refTime->modify('+550 seconds')->format('Y-m-d H:i:s');
+        $res = $this->engine->evaluate(
+            entityType: 'Call',
+            dateStart: $startDate,
+            referenceTime: $this->refTime
+        );
+
+        $this->assertNotEmpty($res['reminders']);
+        foreach ($res['reminders'] as $reminder) {
+            $this->assertLessThanOrEqual(550, $reminder['seconds']);
+            $this->assertContains($reminder['seconds'], [0, 300]);
+        }
+    }
 }
