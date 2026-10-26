@@ -1,0 +1,7 @@
+{
+    "fields": {
+        "reminders": {
+            "view": "custom:views/meeting/fields/smart-reminders"
+        }
+    }
+}
